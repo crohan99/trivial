@@ -3,59 +3,79 @@ import requests
 from random import randint
 from twitchio.ext import commands
 
-class Bot(commands.Bot):
+TRIVIA_API_URL = 'https://opentdb.com/api.php?amount=10'
+TRIVIA_API_PARAMS = {'prompt':'answer'}
 
-    curUser = ''
-    curPrompt = ''
-    curAnswer = ''
-    curIncorrect = {}
+class Bot(commands.Bot):
+    user = ''
+    prompt = ''
+    answer = ''
+    incorrect_answers = {}
+    trivia_started = False
+    options = {0: 'a',
+               1: 'b',
+               2: 'c',
+               3: 'd'}
 
     def __init__(self):
-        # Initialise our Bot with our access token, prefix and a list of channels to join on boot...
+        # init bot
         super().__init__(token='zj3nhpbiun93gav6e4lth774qum4ql', prefix='!', initial_channels=['motorslam99'])
 
     async def event_ready(self):
-        # We are logged in and ready to chat and use commands...
         print(f'Logged in as | {self.nick}')
         print(f'User id is | {self.user_id}')
 
-    async def event_message(self, message):
-        # Messages with echo set to True are messages sent by the bot...
-        # For now we just want to ignore them...
-        if message.echo:
+    async def event_message(self, message, ctx: commands.Context):
+        # Messages with echo set to true are messages sent by the bot
+        # which we want to ignore.
+        if(message.echo):
             return
 
-        # Print the contents of our message to console...
-        print(message.content)
-
-        # Since we have commands and are overriding the default `event_message`
-        # We must let the bot know we want to handle and invoke our commands...
         await self.handle_commands(message)
 
+        if(self.trivia_started):
+                   
+
+    # here's where we handle the !trivia command
     @commands.command(name = 'trivia')
-    async def twitch_command(self, ctx: commands.Context):
-        self.curUser = ctx.author.name
+    async def trivia(self, ctx: commands.Context):
+        endTrivia = False
+        self.user = ctx.author.name
 
-        # get trivia prompts
-        self.getPrompts()
-        await self.promptUser(ctx)
-        # await ctx.send(f'Hello!')
+        # start the game loop, break on !endtrivia
+        while(not self.endtrivia):
+            await self.get_prompts()
+            await self.prompt_user(ctx)
+            await self.eval_response()
 
-    def getPrompts(self):
-        URL = 'https://opentdb.com/api.php?amount=10'
-        PARAMS = {'prompt':'answer'}
+    @commands.command(name = 'endtrivia')
+    async def endtrivia(self, ctx: commands.Context):
 
-        rand = randint(0, 10)
-        r = requests.get(url = URL, params = PARAMS)
+        if(self.endtrivia):
+            return
+        else:
+            self.endtrivia = True
+
+    async def get_prompts(self):
+        rand = randint(0, 9)
+        r = requests.get(url = TRIVIA_API_URL, params = TRIVIA_API_PARAMS)
         data = r.json()
 
-        print(data['results'][rand]['question'])
-        self.curPrompt = data['results'][rand]['question']
-        self.curAnswer = data['results'][rand]['correct_answer']
-        self.curIncorrect = data['results'][rand]['incorrect_answers']
+        # store prompt data
+        # print(data['results'][rand]['question'])
+        self.prompt = data['results'][rand]['question']
+        self.answer = data['results'][rand]['correct_answer']
+        self.incorrect_answers = data['results'][rand]['incorrect_answers']
 
-    async def promptUser(self, ctx):
-        await ctx.send(f'Here is your question, {self.curUser}: \n {self.curPrompt} \n')
+    async def prompt_user(self, ctx):
+        await ctx.send(f'Here is your question, {self.user}: \n'
+        f'{self.prompt} \n'
+        f'Is it: \n'
+        f'{self.incorrect_answers}'
+        f'{self.answer}')
+
+    async def eval_response(self):
+        return
 
 bot = Bot()
 bot.run()
