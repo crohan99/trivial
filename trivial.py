@@ -69,7 +69,7 @@ class TriviaBot(commands.Bot):
     async def get_prompts(self):
         question_idx = randint(0, 9)
         answer_idx = randint(0, 3)
-        print(answer_idx)
+        
         r = requests.get(url = TRIVIA_API_URL, params = TRIVIA_API_PARAMS)
         data = r.json()
 
