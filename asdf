@@ -85,7 +85,8 @@ class TriviaBot(commands.Bot):
 
     # modify this function to work for other data sources
     async def get_prompts(self):
-        # question_idx = randint(0, 9)
+        question_idx = randint(0, 9)
+        answer_idx = randint(0, 3)
         
         # r = requests.get(url = TRIVIA_API_URL, params = TRIVIA_API_PARAMS)
         # data = r.json()
@@ -93,9 +94,6 @@ class TriviaBot(commands.Bot):
         f = open('config.json', "r")
         data = json.loads(f.read())
 
-        answer_idx = randint(0, 3)
-        question_idx = randint(0, data.keys())
-        
         # store prompt data
         self.prompt = data['questions'][question_idx]['question']
         opts = {0: 'a', 1: 'b', 2: 'c', 3: 'd'}
