@@ -6,9 +6,8 @@ import http.client
 from random import randint
 from twitchio.ext import commands
 
-TRIVIA_API_URL = 'https://opentdb.com/api.php?amount=10'
 TRIVIA_API_PARAMS = {'prompt':'answer'}
-TIMEOUT = 1
+TIMEOUT = 30
 
 class TriviaBot(commands.Bot):
     adminName = ''
@@ -22,8 +21,6 @@ class TriviaBot(commands.Bot):
     def __init__(self):
         f = open('config.json', "r")
         data = json.loads(f.read())
-
-        self.connect()
 
         self.trivia_started = False
         # init bot
@@ -40,7 +37,6 @@ class TriviaBot(commands.Bot):
         if(message.echo):
             return
 
-        # blocking?
         await self.handle_commands(message)
 
         if(not self.trivia_started): return
@@ -51,7 +47,7 @@ class TriviaBot(commands.Bot):
             message.content.lower() == 'c' or message.content.lower() == 'd'):
 
             if(message.content.lower() == self.answer):
-                await message.channel.send(f'Correct')
+                await message.channel.send(f'Correct!')
             else:
                 await message.channel.send(f'Incorrect. Correct answer was: {self.answer}. {self.incorrect_answers[self.answer]}')
 
@@ -90,7 +86,6 @@ class TriviaBot(commands.Bot):
 
         answer_idx = randint(0, 3)
         question_idx = randint(0, len(data['questions']) - 1)
-        print(question_idx)
 
         # store prompt data
         self.prompt = data['questions'][question_idx]['question']
@@ -117,7 +112,7 @@ class TriviaBot(commands.Bot):
 
             if(round((time.time() - self.start_time)) >= TIMEOUT):
                 self.trivia_started = False
-                await ctx.send(f'{self.userName} ran out of time!')
+                await ctx.send(f'Trivia ended. {self.userName} ran out of time!')
 
     def timer_handler(self, ctx: commands.Context):
         loop = asyncio.new_event_loop()
@@ -125,20 +120,6 @@ class TriviaBot(commands.Bot):
 
         loop.run_until_complete(self.timer(ctx))
         loop.close()
-
-    def connect(self):
-        f = open('config.json', "r")
-        data = json.loads(f.read())
-
-        connection = http.client.HTTPSConnection('')
-        payload = 'grant_type=client_credentials&client_id=' + data['clientID'] + '&client_secret=' + data['secret']
-        headers = {'content-type': "application/x-www-form-urlencoded"}
-        connection.request("POST", 'https://id.twitch.tv/oauth2/token', payload, headers)
-
-        res = connection.getresponse()
-        data = json.loads(res.read())
-        print(data['access_token'])
-        return data['access_token']
 
 
 tBot = TriviaBot()
