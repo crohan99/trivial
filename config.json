@@ -1,12 +1,11 @@
 {
     "clientID": "w6ddacwbvuuqcaov23i71lkyr1ce0f",
-    "secret":"vl9u4ub32c9ai4ga98oa202hegze56",
-    "channel":"stelmo98",
-    "adminName":"stelmo98",
+    "secret": "wloza19a06c6wu1mziq0wtbhyb1cq9",
+    "channel": "motorslam99",
     "questions": [
         {
             "question": "blah blah blah",
-            "answer": "real answer",
+            "correct_answer": "real answer",
             "incorrect_answers": [
                 "fake answer",
                 "fake answer",
@@ -15,7 +14,7 @@
         },
         {
             "question": "blah blah blah",
-            "answer": "real answer",
+            "correct_answer": "real answer",
             "incorrect_answers": [
                 "fake answer",
                 "fake answer",
@@ -24,7 +23,7 @@
         },
         {
             "question": "blah blah blah",
-            "answer": "real answer",
+            "correct_answer": "real answer",
             "incorrect_answers": [
                 "fake answer",
                 "fake answer",
