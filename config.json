@@ -1,6 +1,6 @@
 {
-    "secret": "wjs2fl8esafxs9bgj50s3l5a7w9dt9",
-    "channel": "motorslam99",
+    "secret": "your-secret",
+    "channel": "your-channel-name",
     "questions": [
         {
             "question": "blah blah blah",
